@@ -9,25 +9,23 @@ $('.root').append(
 $.get(`http://api.openweathermap.org/data/2.5/forecast?q=${city}&units=imperial&APPID=${APIKEY}`, successCB)
 .fail( err => console.log('err:',err) );
 
-function successCB(data) {
-  console.log(data);
-  let today = data.list[0].dt_txt.slice(0,10);
-  let todayData = [];
-  let todayTemp = 0;
+function successCB(results) {
+  console.log(results);
+  let today = results.list[0].dt_txt.slice(0,10);
+  let todayData = {
+    temp: 0,
+  };
+  let count = 0;
 
-  for (var i = 0; i < data.list.length; i++) {
-    if (data.list[i].dt_txt.slice(0,10) == today)
-      todayData.push(data.list[i]);
+  for (let i = 0; i < results.list.length; i++) {
+    if (results.list[i].dt_txt.slice(0,10) == today) {
+      count++;
+      todayData.temp += results.list[i].main.temp;
+    }
   }
-
-  for (var j = 0; j < todayData.length; j++) {
-    todayTemp += todayData[j].main.temp;
-  }
-  todayTemp = todayTemp / j;
-
-  console.log(todayTemp);
+  todayData.temp /= count;
 
   $('.weather-details').append(
-    `<p>Temperature: ${todayTemp}&degF</p>`
+    `<p>Temperature: ${todayData.temp}&degF</p>`
   );
 }

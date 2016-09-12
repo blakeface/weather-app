@@ -9,22 +9,21 @@ $.get('http://api.openweathermap.org/data/2.5/forecast?q=' + city + '&units=impe
   return console.log('err:', err);
 });
 
-function successCB(data) {
-  console.log(data);
-  var today = data.list[0].dt_txt.slice(0, 10);
-  var todayData = [];
-  var todayTemp = 0;
+function successCB(results) {
+  console.log(results);
+  var today = results.list[0].dt_txt.slice(0, 10);
+  var todayData = {
+    temp: 0
+  };
+  var count = 0;
 
-  for (var i = 0; i < data.list.length; i++) {
-    if (data.list[i].dt_txt.slice(0, 10) == today) todayData.push(data.list[i]);
+  for (var i = 0; i < results.list.length; i++) {
+    if (results.list[i].dt_txt.slice(0, 10) == today) {
+      count++;
+      todayData.temp += results.list[i].main.temp;
+    }
   }
+  todayData.temp /= count;
 
-  for (var j = 0; j < todayData.length; j++) {
-    todayTemp += todayData[j].main.temp;
-  }
-  todayTemp = todayTemp / j;
-
-  console.log(todayTemp);
-
-  $('.weather-details').append('<p>Temperature: ' + todayTemp + '&degF</p>');
+  $('.weather-details').append('<p>Temperature: ' + todayData.temp + '&degF</p>');
 }
