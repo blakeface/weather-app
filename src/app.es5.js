@@ -12,7 +12,6 @@ $.get('http://api.openweathermap.org/data/2.5/forecast?q=' + city + '&units=impe
 function successCB(results) {
   var weatherData = {};
   console.log('results:', results.list);
-
   for (var i = 0; i < results.list.length; i++) {
     var today = results.list[i].dt_txt.slice(0, 10);
     var next = void 0;
@@ -26,18 +25,25 @@ function successCB(results) {
     }
     if (today !== next) {
       var todaysData = weatherData[today].data;
-
       for (var j = 0; j < todaysData.length; j++) {
         weatherData[today].temp += todaysData[j].main.temp;
         weatherData[today].humidity += todaysData[j].main.humidity;
         weatherData[today].pressure += todaysData[j].main.pressure;
         if (j === todaysData.length - 1) {
-          weatherData[today].temp /= j;
-          weatherData[today].humidity /= j;
-          weatherData[today].pressure /= j;
+          weatherData[today].temp = (weatherData[today].temp / j).toFixed(2);
+          weatherData[today].humidity = (weatherData[today].humidity / j).toFixed(2);
+          weatherData[today].pressure = (weatherData[today].pressure / j).toFixed(2);
         }
       }
     }
   }
-  console.log('weatherData:', weatherData);
+  appendWeatherEl(weatherData);
+}
+
+function appendWeatherEl(data) {
+  var i = 0;
+  for (var key in data) {
+    i++;
+    $('.weather-details').append('<div id="day' + i + '">\n        <h3>' + key + '</h3>\n        <p>Temperature: ' + data[key].temp + '</p>\n        <p>Humidity: ' + data[key].humidity + '</p>\n        <p>Presssure: ' + data[key].pressure + '</p>\n      </div>');
+  }
 }
