@@ -10,20 +10,34 @@ $.get('http://api.openweathermap.org/data/2.5/forecast?q=' + city + '&units=impe
 });
 
 function successCB(results) {
-  console.log(results);
-  var today = results.list[0].dt_txt.slice(0, 10);
-  var todayData = {
-    temp: 0
-  };
-  var count = 0;
+  var weatherData = {};
+  console.log('results:', results.list);
 
   for (var i = 0; i < results.list.length; i++) {
-    if (results.list[i].dt_txt.slice(0, 10) == today) {
-      count++;
-      todayData.temp += results.list[i].main.temp;
+    var today = results.list[i].dt_txt.slice(0, 10);
+    var next = void 0;
+    if (results.list[i + 1]) next = results.list[i + 1].dt_txt.slice(0, 10);
+
+    if (weatherData[today]) {
+      weatherData[today].data.push(results.list[i]);
+    }
+    if (!weatherData[today]) {
+      weatherData[today] = { temp: 0, humidity: 0, pressure: 0, data: [results.list[i]] };
+    }
+    if (today !== next) {
+      var todaysData = weatherData[today].data;
+
+      for (var j = 0; j < todaysData.length; j++) {
+        weatherData[today].temp += todaysData[j].main.temp;
+        weatherData[today].humidity += todaysData[j].main.humidity;
+        weatherData[today].pressure += todaysData[j].main.pressure;
+        if (j === todaysData.length - 1) {
+          weatherData[today].temp /= j;
+          weatherData[today].humidity /= j;
+          weatherData[today].pressure /= j;
+        }
+      }
     }
   }
-  todayData.temp /= count;
-
-  $('.weather-details').append('<p>Temperature: ' + todayData.temp + '&degF</p>');
+  console.log('weatherData:', weatherData);
 }

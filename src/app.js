@@ -10,22 +10,35 @@ $.get(`http://api.openweathermap.org/data/2.5/forecast?q=${city}&units=imperial&
 .fail( err => console.log('err:',err) );
 
 function successCB(results) {
-  console.log(results);
-  let today = results.list[0].dt_txt.slice(0,10);
-  let todayData = {
-    temp: 0,
-  };
-  let count = 0;
+  let weatherData = {};
+  console.log('results:',results.list);
 
   for (let i = 0; i < results.list.length; i++) {
-    if (results.list[i].dt_txt.slice(0,10) == today) {
-      count++;
-      todayData.temp += results.list[i].main.temp;
+    let today = results.list[i].dt_txt.slice(0,10);
+    let next;
+    if (results.list[i+1]) next = results.list[i+1].dt_txt.slice(0,10);
+
+    if (weatherData[today]) {
+      weatherData[today].data.push(results.list[i]);
+    }
+    if (!weatherData[today]) {
+      weatherData[today] = { temp:0, humidity:0, pressure:0, data:[results.list[i]] };
+    }
+    if (today !== next) {
+      let todaysData = weatherData[today].data;
+
+      for (let j = 0; j < todaysData.length; j++) {
+        weatherData[today].temp += todaysData[j].main.temp;
+        weatherData[today].humidity += todaysData[j].main.humidity;
+        weatherData[today].pressure += todaysData[j].main.pressure;
+        if (j === todaysData.length-1) {
+          weatherData[today].temp /= j;
+          weatherData[today].humidity /= j;
+          weatherData[today].pressure /= j;
+        }
+      }
     }
   }
-  todayData.temp /= count;
+  console.log('weatherData:', weatherData);
 
-  $('.weather-details').append(
-    `<p>Temperature: ${todayData.temp}&degF</p>`
-  );
 }
