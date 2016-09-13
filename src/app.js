@@ -1,7 +1,12 @@
 const APIKEY = '6e1fc93970e4f39c34301ff3e1a16977';
 const city = 'Boulder';
 
-$('.root').append(
+$('.root').css({
+  'display': 'flex',
+  'flex-flow': 'column nowrap',
+  'justify-content': 'center',
+  'align-items': 'center',
+}).append(
   `<h1>Weather Forecast for ${city}</h1>
   <div class="weather-details"></div>`
 );
@@ -56,4 +61,12 @@ function appendWeatherEl(data) {
       </div>`
     );
   }
+  styleEl();
+}
+
+function styleEl() {
+  $('.weather-details div:first-child').css({
+    'width': '100%',
+    'background': 'rgb(9, 68, 102)',
+  });
 }

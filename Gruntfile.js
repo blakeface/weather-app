@@ -31,19 +31,9 @@ module.exports = function(grunt) {
         },
       },
     },
-    cssmin: {
-      dist: {
-        options: {
-          banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
-        },
-        files: {
-          'dist/style.min.css': ['src/*.css'],
-        },
-      },
-    },
     watch: {
-      files: ['<%= jshint.files %>', 'src/*.css'],
-      tasks: ['jshint', 'babel', 'uglify', 'cssmin'],
+      files: ['<%= jshint.files %>'],
+      tasks: ['jshint', 'babel', 'uglify'],
       options: { livereload: true },
     },
     connect: {
@@ -62,7 +52,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-cssmin');
 
-  grunt.registerTask('default', ['jshint', 'babel', 'uglify', 'cssmin', 'connect']);
+  grunt.registerTask('default', ['jshint', 'babel', 'uglify', 'connect']);
 };
