@@ -46,13 +46,13 @@ function appendWeatherEl(data) {
   let i = 0;
   for (let key in data) {
     i++;
-    let date = moment(key, 'YYYY-DD-MM');
+    let date = moment(key).format('dddd, MMMM Do');
     $('.weather-details').append(
       `<div id="day${i}">
-      <h3>${date}</h3>
-      <p>Temperature: ${data[key].temp}</p>
-      <p>Humidity: ${data[key].humidity}</p>
-      <p>Presssure: ${data[key].pressure}</p>
+        <h3>${date}</h3>
+        <p>Temperature: ${data[key].temp}</p>
+        <p>Humidity: ${data[key].humidity}</p>
+        <p>Presssure: ${data[key].pressure}</p>
       </div>`
     );
   }
