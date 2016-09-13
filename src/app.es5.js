@@ -16,27 +16,29 @@ function successCB(results) {
     var today = results.list[i].dt_txt.slice(0, 10);
     var next = void 0;
     if (results.list[i + 1]) next = results.list[i + 1].dt_txt.slice(0, 10);
+    var resultsData = results.list[i].main;
 
     if (weatherData[today]) {
-      weatherData[today].data.push(results.list[i]);
+      weatherData[today].temp += resultsData.temp;
+      weatherData[today].humidity += resultsData.humidity;
+      weatherData[today].pressure += resultsData.pressure;
+      weatherData[today].readings++;
     }
     if (!weatherData[today]) {
-      weatherData[today] = { temp: 0, humidity: 0, pressure: 0, data: [results.list[i]] };
+      weatherData[today] = {
+        temp: resultsData.temp,
+        humidity: resultsData.humidity,
+        pressure: resultsData.pressure,
+        readings: 1
+      };
     }
     if (today !== next) {
-      var todaysData = weatherData[today].data;
-      for (var j = 0; j < todaysData.length; j++) {
-        weatherData[today].temp += todaysData[j].main.temp;
-        weatherData[today].humidity += todaysData[j].main.humidity;
-        weatherData[today].pressure += todaysData[j].main.pressure;
-        if (j === todaysData.length - 1) {
-          weatherData[today].temp = (weatherData[today].temp / j).toFixed(2);
-          weatherData[today].humidity = (weatherData[today].humidity / j).toFixed(2);
-          weatherData[today].pressure = (weatherData[today].pressure / j).toFixed(2);
-        }
-      }
+      weatherData[today].temp = (weatherData[today].temp / weatherData[today].readings).toFixed(2);
+      weatherData[today].humidity = (weatherData[today].humidity / weatherData[today].readings).toFixed(2);
+      weatherData[today].pressure = (weatherData[today].pressure / weatherData[today].readings).toFixed(2);
     }
   }
+  console.log('weatherData:', weatherData);
   appendWeatherEl(weatherData);
 }
 
@@ -45,6 +47,6 @@ function appendWeatherEl(data) {
   for (var key in data) {
     i++;
     var date = moment(key, 'YYYY-DD-MM');
-    $('.weather-details').append('<div id="day' + i + '">\n        <h3>' + date + '</h3>\n        <p>Temperature: ' + data[key].temp + '</p>\n        <p>Humidity: ' + data[key].humidity + '</p>\n        <p>Presssure: ' + data[key].pressure + '</p>\n      </div>');
+    $('.weather-details').append('<div id="day' + i + '">\n      <h3>' + date + '</h3>\n      <p>Temperature: ' + data[key].temp + '</p>\n      <p>Humidity: ' + data[key].humidity + '</p>\n      <p>Presssure: ' + data[key].pressure + '</p>\n      </div>');
   }
 }

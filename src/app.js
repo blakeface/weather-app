@@ -16,27 +16,29 @@ function successCB(results) {
     let today = results.list[i].dt_txt.slice(0,10);
     let next;
     if (results.list[i+1]) next = results.list[i+1].dt_txt.slice(0,10);
+    let resultsData = results.list[i].main;
 
     if (weatherData[today]) {
-      weatherData[today].data.push(results.list[i]);
+      weatherData[today].temp += resultsData.temp;
+      weatherData[today].humidity += resultsData.humidity;
+      weatherData[today].pressure += resultsData.pressure;
+      weatherData[today].readings++;
     }
     if (!weatherData[today]) {
-      weatherData[today] = { temp:0, humidity:0, pressure:0, data:[results.list[i]] };
+      weatherData[today] = {
+        temp: resultsData.temp,
+        humidity: resultsData.humidity,
+        pressure: resultsData.pressure,
+        readings: 1,
+      };
     }
     if (today !== next) {
-      let todaysData = weatherData[today].data;
-      for (let j = 0; j < todaysData.length; j++) {
-        weatherData[today].temp += todaysData[j].main.temp;
-        weatherData[today].humidity += todaysData[j].main.humidity;
-        weatherData[today].pressure += todaysData[j].main.pressure;
-        if (j === todaysData.length-1) {
-          weatherData[today].temp = (weatherData[today].temp / j).toFixed(2);
-          weatherData[today].humidity = (weatherData[today].humidity / j).toFixed(2);
-          weatherData[today].pressure = (weatherData[today].pressure / j).toFixed(2);
-        }
-      }
+      weatherData[today].temp = (weatherData[today].temp / weatherData[today].readings).toFixed(2);
+      weatherData[today].humidity = (weatherData[today].humidity / weatherData[today].readings).toFixed(2);
+      weatherData[today].pressure = (weatherData[today].pressure / weatherData[today].readings).toFixed(2);
     }
   }
+  console.log('weatherData:',weatherData);
   appendWeatherEl(weatherData);
 }
 
@@ -47,10 +49,10 @@ function appendWeatherEl(data) {
     let date = moment(key, 'YYYY-DD-MM');
     $('.weather-details').append(
       `<div id="day${i}">
-        <h3>${date}</h3>
-        <p>Temperature: ${data[key].temp}</p>
-        <p>Humidity: ${data[key].humidity}</p>
-        <p>Presssure: ${data[key].pressure}</p>
+      <h3>${date}</h3>
+      <p>Temperature: ${data[key].temp}</p>
+      <p>Humidity: ${data[key].humidity}</p>
+      <p>Presssure: ${data[key].pressure}</p>
       </div>`
     );
   }
