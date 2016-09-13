@@ -26,8 +26,8 @@ function successCB(results) {
       description: detailedData.description,
       clouds: hourlyData.clouds.all,
       wind: { deg: hourlyData.wind.deg, speed: hourlyData.wind.speed },
-      rain: hourlyData.rain[3h],
-      snow: hourlyData.snow[3h],
+      // rain: hourlyData.rain[3h],
+      // snow: hourlyData.snow[3h],
     };
 
     if (weatherData[today]) {
@@ -39,6 +39,7 @@ function successCB(results) {
       weatherData[today].readings++;
       weatherData[today].hourly[time] = hourlyObj;
     }
+
     if (!weatherData[today]) {
       weatherData[today] = {
         temp: unitData.temp,
@@ -51,6 +52,7 @@ function successCB(results) {
       };
       weatherData[today].hourly[time] = hourlyObj;
     }
+
     if (today !== next) {
       weatherData[today].temp = (weatherData[today].temp / weatherData[today].readings).toFixed(2);
       weatherData[today].humidity = (weatherData[today].humidity / weatherData[today].readings).toFixed(2);
@@ -68,19 +70,27 @@ function appendWeatherEl(data) {
     let date = moment(key).format('dddd, MMMM Do');
     $('.weather-details').append(
       `<div id="day${i}">
-      <div class="metrics">
-      <h3>${date}</h3>
-      <p>Temperature: ${data[key].temp}</p>
-      <p>High: ${data[key].temp_max}</p>
-      <p>Low: ${data[key].temp_min}</p>
-      <p>Humidity: ${data[key].humidity}</p>
-      <p>Presssure: ${data[key].pressure}</p>
-      </div>
-      <div class="bar">
-      </div>
+        <div class="metrics">
+          <h3>${date}</h3>
+          <p>Temperature: ${data[key].temp}</p>
+          <p>High: ${data[key].temp_max}</p>
+          <p>Low: ${data[key].temp_min}</p>
+          <p>Humidity: ${data[key].humidity}</p>
+          <p>Presssure: ${data[key].pressure}</p>
+        </div>
+        <div class="bar">
+        </div>
       </div>`
     );
+    for (let _key in data[key].hourly) {
+      console.log(key, _key);
+      $(`#id${i} div.bar`).append(
+        `<span>${_key}</span>`
+      );
+    }
   }
+
+
   styleEl();
 }
 

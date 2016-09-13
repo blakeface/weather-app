@@ -17,10 +17,16 @@ function successCB(results) {
     var time = results.list[i].dt_txt.slice(11, 19);
     var next = void 0;
     if (results.list[i + 1]) next = results.list[i + 1].dt_txt.slice(0, 10);
+
     var unitData = results.list[i].main;
     var detailedData = results.list[i].weather[0];
-    var wind = results.list[i].wind;
-    var cloud = results.list[i].clouds;
+    var hourlyData = results.list[i];
+    var hourlyObj = {
+      id: detailedData.id,
+      description: detailedData.description,
+      clouds: hourlyData.clouds.all,
+      wind: { deg: hourlyData.wind.deg, speed: hourlyData.wind.speed }
+    };
 
     if (weatherData[today]) {
       weatherData[today].temp += unitData.temp;
@@ -29,14 +35,9 @@ function successCB(results) {
       if (weatherData[today].temp_min > unitData.temp_min) weatherData[today].temp_min = unitData.temp_min;
       if (weatherData[today].temp_max < unitData.temp_max) weatherData[today].temp_max = unitData.temp_max;
       weatherData[today].readings++;
-      weatherData[today].hourly[time] = {
-        description: detailedData.description,
-        id: detailedData.id,
-        clouds: cloud.all,
-        wind: { deg: wind.deg, speed: wind.speed }
-
-      };
+      weatherData[today].hourly[time] = hourlyObj;
     }
+
     if (!weatherData[today]) {
       weatherData[today] = {
         temp: unitData.temp,
@@ -47,8 +48,9 @@ function successCB(results) {
         readings: 1,
         hourly: {}
       };
-      weatherData[today].hourly[time] = { description: detailedData.description, id: detailedData.id };
+      weatherData[today].hourly[time] = hourlyObj;
     }
+
     if (today !== next) {
       weatherData[today].temp = (weatherData[today].temp / weatherData[today].readings).toFixed(2);
       weatherData[today].humidity = (weatherData[today].humidity / weatherData[today].readings).toFixed(2);
@@ -65,7 +67,13 @@ function appendWeatherEl(data) {
     i++;
     var date = moment(key).format('dddd, MMMM Do');
     $('.weather-details').append('<div id="day' + i + '">\n        <div class="metrics">\n          <h3>' + date + '</h3>\n          <p>Temperature: ' + data[key].temp + '</p>\n          <p>High: ' + data[key].temp_max + '</p>\n          <p>Low: ' + data[key].temp_min + '</p>\n          <p>Humidity: ' + data[key].humidity + '</p>\n          <p>Presssure: ' + data[key].pressure + '</p>\n        </div>\n        <div class="bar">\n        </div>\n      </div>');
+    for (var _key in data[key].hourly) {
+      console.log(key, _key);
+      console.log('#id' + i);
+      $('#id' + i + ' div.bar').append('<span>' + _key + '</span>');
+    }
   }
+
   styleEl();
 }
 
