@@ -19,5 +19,8 @@
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-contrib-watch": "^1.0.0"
+  },
+  "dependencies": {
+    "moment": "^2.15.0"
   }
 }

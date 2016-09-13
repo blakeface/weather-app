@@ -44,6 +44,7 @@ function appendWeatherEl(data) {
   var i = 0;
   for (var key in data) {
     i++;
-    $('.weather-details').append('<div id="day' + i + '">\n        <h3>' + key + '</h3>\n        <p>Temperature: ' + data[key].temp + '</p>\n        <p>Humidity: ' + data[key].humidity + '</p>\n        <p>Presssure: ' + data[key].pressure + '</p>\n      </div>');
+    var date = moment(key, 'YYYY-DD-MM');
+    $('.weather-details').append('<div id="day' + i + '">\n        <h3>' + date + '</h3>\n        <p>Temperature: ' + data[key].temp + '</p>\n        <p>Humidity: ' + data[key].humidity + '</p>\n        <p>Presssure: ' + data[key].pressure + '</p>\n      </div>');
   }
 }
