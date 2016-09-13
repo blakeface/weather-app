@@ -1,12 +1,7 @@
 const APIKEY = '6e1fc93970e4f39c34301ff3e1a16977';
 const city = 'Boulder';
 
-$('.root').css({
-  'display': 'flex',
-  'flex-flow': 'column nowrap',
-  'justify-content': 'center',
-  'align-items': 'center',
-}).append(
+$('.root').append(
   `<h1>Weather Forecast for ${city}</h1>
   <div class="weather-details"></div>`
 );
@@ -19,23 +14,42 @@ function successCB(results) {
   console.log('results:',results.list);
   for (let i = 0; i < results.list.length; i++) {
     let today = results.list[i].dt_txt.slice(0,10);
+    let time = results.list[i].dt_txt.slice(11,19);
     let next;
     if (results.list[i+1]) next = results.list[i+1].dt_txt.slice(0,10);
-    let resultsData = results.list[i].main;
+
+    let unitData = results.list[i].main;
+    let detailedData = results.list[i].weather[0];
+    let hourlyData = results.list[i];
+    let hourlyObj = {
+      id: detailedData.id,
+      description: detailedData.description,
+      clouds: hourlyData.clouds.all,
+      wind: { deg: hourlyData.wind.deg, speed: hourlyData.wind.speed },
+      rain: hourlyData.rain[3h],
+      snow: hourlyData.snow[3h],
+    };
 
     if (weatherData[today]) {
-      weatherData[today].temp += resultsData.temp;
-      weatherData[today].humidity += resultsData.humidity;
-      weatherData[today].pressure += resultsData.pressure;
+      weatherData[today].temp += unitData.temp;
+      weatherData[today].humidity += unitData.humidity;
+      weatherData[today].pressure += unitData.pressure;
+      if (weatherData[today].temp_min > unitData.temp_min) weatherData[today].temp_min = unitData.temp_min;
+      if (weatherData[today].temp_max < unitData.temp_max) weatherData[today].temp_max = unitData.temp_max;
       weatherData[today].readings++;
+      weatherData[today].hourly[time] = hourlyObj;
     }
     if (!weatherData[today]) {
       weatherData[today] = {
-        temp: resultsData.temp,
-        humidity: resultsData.humidity,
-        pressure: resultsData.pressure,
+        temp: unitData.temp,
+        temp_min: unitData.temp_min,
+        temp_max: unitData.temp_max,
+        humidity: unitData.humidity,
+        pressure: unitData.pressure,
         readings: 1,
+        hourly: {},
       };
+      weatherData[today].hourly[time] = hourlyObj;
     }
     if (today !== next) {
       weatherData[today].temp = (weatherData[today].temp / weatherData[today].readings).toFixed(2);
@@ -54,10 +68,16 @@ function appendWeatherEl(data) {
     let date = moment(key).format('dddd, MMMM Do');
     $('.weather-details').append(
       `<div id="day${i}">
-        <h3>${date}</h3>
-        <p>Temperature: ${data[key].temp}</p>
-        <p>Humidity: ${data[key].humidity}</p>
-        <p>Presssure: ${data[key].pressure}</p>
+      <div class="metrics">
+      <h3>${date}</h3>
+      <p>Temperature: ${data[key].temp}</p>
+      <p>High: ${data[key].temp_max}</p>
+      <p>Low: ${data[key].temp_min}</p>
+      <p>Humidity: ${data[key].humidity}</p>
+      <p>Presssure: ${data[key].pressure}</p>
+      </div>
+      <div class="bar">
+      </div>
       </div>`
     );
   }
@@ -65,8 +85,12 @@ function appendWeatherEl(data) {
 }
 
 function styleEl() {
-  $('.weather-details div:first-child').css({
-    'width': '100%',
-    'background': 'rgb(9, 68, 102)',
+  $("body, div:parent").css({
+    'margin': '0px',
+    'display': 'flex',
+    'flex-flow': 'column nowrap',
+    'justify-content': 'center',
+    'align-items': 'center',
+    'width': '100vw',
   });
 }
