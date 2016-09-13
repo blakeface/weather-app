@@ -7,9 +7,17 @@
     "start": "grunt",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blakeface/weather-app.git"
+  },
   "keywords": [],
   "author": "Blake Face",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/blakeface/weather-app/issues"
+  },
+  "homepage": "https://github.com/blakeface/weather-app#readme",
   "devDependencies": {
     "babel-preset-es2015": "^6.14.0",
     "grunt": "^1.0.1",
